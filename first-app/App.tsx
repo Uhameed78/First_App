@@ -34,22 +34,32 @@ const Stack = createNativeStackNavigator();
       <Text style={styles.welcomeTxt}> Welcome to my app!</Text>
       <Image style={styles.logo} source={require('./images/littleFella.png')}/>
 
-<View style={styles.inputFlex} >
+ <View style={styles.inputFlex}>
 
-      <Text style={styles.headingTxt}> Please enter your name</Text>
+        <Text style={styles.headingTxt}> Please enter your name</Text>
 
-      <TextInput style={styles.inputTxt}  placeholder="Robert" 
+        <TextInput
+          style={styles.inputTxt}
+          placeholder="Robert"
+          onChangeText={newText => setName(newText)}
+          autoCapitalize="words"
+          autoCorrect={false}
+          keyboardType="default"
+        />
 
-      onChangeText={newText => setName(newText)}/>
+        <Text style={styles.headingTxt}> Please enter your surname</Text>
 
-      <Text style={styles.headingTxt}> Please enter your surname</Text>
-
-      <TextInput style={styles.inputTxt} placeholder="Downey" 
-
-       onChangeText={newText => setSurname(newText)}/>
+        <TextInput
+          style={styles.inputTxt}
+          placeholder="Downey"
+          onChangeText={newText => setSurname(newText)}
+          autoCapitalize="words"
+          autoCorrect={false}
+          keyboardType="default"
+        />
 
       </View>
-      
+
 
 
 <Button

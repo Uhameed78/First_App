@@ -79,12 +79,12 @@ function MainScreen({ navigation }: MainScreenProps) {
 }
 
 function ViewDetails({ route }: ViewDetailProps) {
-  const nameGet = route.params.NameSend;
-  const surnameGet = route.params.SurnameSend;
+  const NameGet = route.params.NameSend;
+  const SurnameGet = route.params.SurnameSend;
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text> Name: {nameGet}; Surname: {surnameGet} </Text>
+      <Text> Name: {NameGet}; Surname: {SurnameGet} </Text>
     </View>
   );
 }

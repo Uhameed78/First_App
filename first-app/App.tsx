@@ -40,7 +40,9 @@ export default function App() {
 function MainScreen({ navigation }: MainScreenProps) {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
-  const [Error, setError] = useState('');
+  const [Error, setError] = useState(false);
+
+  console.log("App works!");
 
   return (
     <View>
@@ -50,7 +52,7 @@ function MainScreen({ navigation }: MainScreenProps) {
           <Image style={styles.logo} source={require('./images/littleFella.png')} />
 
           <FadeInView duration={3000}>
-            <Text style={styles.redText}>{Error}</Text>
+            <Text style={Error? styles.redText : styles.headingTxt }>{Error? "Please enter your info" : ""}</Text>
             <View style={styles.inputFlex}>
               <Text style={styles.headingTxt}> Please enter your name</Text>
               <TextInput
@@ -82,9 +84,9 @@ if ((isEmpty(name)==false) && (isEmpty(surname)==false)) {
               
 
               navigation.navigate('View', { NameSend: name, SurnameSend: surname });
-            setError('');
+            setError(false);
             } else {
-              setError('Please fill in all fields');
+              setError(true);
             }} }/>
 
           <StatusBar style="auto" />

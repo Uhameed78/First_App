@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
-import { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, Button, Image, SafeAreaView, ScrollView, Animated } from 'react-native';
+import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -23,7 +25,13 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={MainScreen} />
-        <Stack.Screen name="View" component={ViewDetails} />
+        <Stack.Screen
+          name="View"
+          component={ViewDetails}
+          options={{
+            animation: 'fade', // screen-transition animation (try 'slide_from_right', 'flip' too)
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -33,47 +41,46 @@ function MainScreen({ navigation }: MainScreenProps) {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
 
-  console.log("App works!");
-
   return (
     <View>
-      <Text style={styles.welcomeTxt}> Welcome to my app!</Text>
-      <Image style={styles.logo} source={require('./images/littleFella.png')} />
+      <SafeAreaView>
+        <ScrollView>
+          <Text style={styles.welcomeTxt}> Welcome to my app!</Text>
+          <Image style={styles.logo} source={require('./images/littleFella.png')} />
 
-      <View style={styles.inputFlex}>
+          <FadeInView duration={1200}>
+            <View style={styles.inputFlex}>
+              <Text style={styles.headingTxt}> Please enter your name</Text>
+              <TextInput
+                style={styles.inputTxt}
+                placeholder="Robert"
+                onChangeText={newText => setName(newText)}
+                autoCapitalize="words"
+                autoCorrect={false}
+                keyboardType="default"
+              />
 
-        <Text style={styles.headingTxt}> Please enter your name</Text>
+              <Text style={styles.headingTxt}> Please enter your surname</Text>
+              <TextInput
+                style={styles.inputTxt}
+                placeholder="Downey"
+                onChangeText={newText => setSurname(newText)}
+                autoCapitalize="words"
+                autoCorrect={false}
+                keyboardType="default"
+              />
+            </View>
+          </FadeInView>
 
-        <TextInput
-          style={styles.inputTxt}
-          placeholder="Robert"
-          onChangeText={newText => setName(newText)}
-          autoCapitalize="words"
-          autoCorrect={false}
-          keyboardType="default"
-        />
-
-        <Text style={styles.headingTxt}> Please enter your surname</Text>
-
-        <TextInput
-          style={styles.inputTxt}
-          placeholder="Downey"
-          onChangeText={newText => setSurname(newText)}
-          autoCapitalize="words"
-          autoCorrect={false}
-          keyboardType="default"
-        />
-
-      </View>
-
-      <Button
-        title="Add user"
-        onPress={() => {
-          navigation.navigate('View', { NameSend: name, SurnameSend: surname });
-          console.log("Name: " + name + " Surname: " + surname);
-        }}
-      />
-      <StatusBar style="auto" />
+          <Button
+            title="Add user"
+            onPress={() => {
+              navigation.navigate('View', { NameSend: name, SurnameSend: surname });
+            }}
+          />
+          <StatusBar style="auto" />
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
@@ -84,10 +91,52 @@ function ViewDetails({ route }: ViewDetailProps) {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text> Name: {NameGet}; Surname: {SurnameGet} </Text>
+      {/* Same component, different duration/toValue — proves it's configurable */}
+      <FadeInView duration={2500}>
+        <Text> Name: {NameGet}; Surname: {SurnameGet} </Text>
+      </FadeInView>
     </View>
   );
 }
+
+interface FadeInViewProps {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  duration?: number;
+  toValue?: number;
+}
+
+const FadeInView = ({ children, style, duration = 4000, toValue = 1 }: FadeInViewProps) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue,
+        duration,
+        useNativeDriver: false,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration,
+        useNativeDriver: false,
+      }),
+    ]).start();
+  }, [fadeAnim, slideAnim, duration, toValue]);
+
+  return (
+    <Animated.View
+      style={{
+        ...(style as object),
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+};
 
 const styles = StyleSheet.create({
   welcomeTxt: {

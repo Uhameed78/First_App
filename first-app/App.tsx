@@ -40,6 +40,7 @@ export default function App() {
 function MainScreen({ navigation }: MainScreenProps) {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
+  const [Error, setError] = useState('');
 
   return (
     <View>
@@ -48,7 +49,8 @@ function MainScreen({ navigation }: MainScreenProps) {
           <Text style={styles.welcomeTxt}> Welcome to my app!</Text>
           <Image style={styles.logo} source={require('./images/littleFella.png')} />
 
-          <FadeInView duration={1200}>
+          <FadeInView duration={3000}>
+            <Text style={styles.redText}>{Error}</Text>
             <View style={styles.inputFlex}>
               <Text style={styles.headingTxt}> Please enter your name</Text>
               <TextInput
@@ -75,9 +77,16 @@ function MainScreen({ navigation }: MainScreenProps) {
           <Button
             title="Add user"
             onPress={() => {
+
+if ((isEmpty(name)==false) && (isEmpty(surname)==false)) {
+              
+
               navigation.navigate('View', { NameSend: name, SurnameSend: surname });
-            }}
-          />
+            setError('');
+            } else {
+              setError('Please fill in all fields');
+            }} }/>
+
           <StatusBar style="auto" />
         </ScrollView>
       </SafeAreaView>
@@ -92,12 +101,18 @@ function ViewDetails({ route }: ViewDetailProps) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       {/* Same component, different duration/toValue — proves it's configurable */}
-      <FadeInView duration={2500}>
+      <FadeInView duration={4000} toValue={1}>
         <Text> Name: {NameGet}; Surname: {SurnameGet} </Text>
       </FadeInView>
     </View>
   );
 }
+
+function isEmpty(value: any){
+  return (value === null ) || 
+  (value.hasOwnProperty('length') && value.length === 0) || 
+  (value.constructor === Object && Object.keys(value).length === 0);
+};
 
 interface FadeInViewProps {
   children: ReactNode;
@@ -171,4 +186,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginTop: 20,
   },
+
+redText: {
+    color: 'red',
+    fontSize: 21,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
 });
